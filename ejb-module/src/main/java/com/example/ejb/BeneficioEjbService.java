@@ -1,22 +1,26 @@
 package com.example.ejb;
 
 import jakarta.ejb.Stateless;
-import jakarta.ejb.TransactionAttribute;
-import jakarta.ejb.TransactionAttributeType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.PersistenceContext;
+
 import java.math.BigDecimal;
 
 import com.example.model.Beneficio;
 import jakarta.persistence.EntityNotFoundException; 
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
 @Stateless
 public class BeneficioEjbService {
 
     @PersistenceContext
     private EntityManager em;
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    @Transactional
     public void transfer(Long fromId, Long toId, BigDecimal amount) {
         
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
