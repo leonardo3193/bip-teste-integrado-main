@@ -13,16 +13,16 @@ import { BeneficioService } from './services/beneficio.service';
 })
 export class App implements OnInit {
   private readonly beneficioService = inject(BeneficioService);
-  
+
   // Signals para estado reativo
   beneficios = signal<any[]>([]);
   loading = signal(false);
-  
+
   // Dados do formulário
   transferData = {
-    fromId: 0,
-    toId: 0,
-    amount: 0
+    fromId: null as any,
+    toId: null as any,
+    amount: null as any
   };
 
   ngOnInit() {
@@ -39,21 +39,39 @@ export class App implements OnInit {
   }
 
   executarTransferencia() {
-    if (this.transferData.fromId === this.transferData.toId) {
-      alert("Selecione contas diferentes!");
+    this.loading.set(true);
+
+    // Tratamento para garantir que o valor seja numérico (converte vírgula para ponto se necessário)
+    let valorFormatado = this.transferData.amount;
+    if (typeof valorFormatado === 'string') {
+      valorFormatado = parseFloat(valorFormatado.replace(',', '.'));
+    }
+
+    // Validação básica no front antes de disparar
+    if (isNaN(valorFormatado) || valorFormatado <= 0) {
+      alert('Informe um valor válido para a operação.');
+      this.loading.set(false);
       return;
     }
 
     this.beneficioService.transferir(
-      this.transferData.fromId, 
-      this.transferData.toId, 
-      this.transferData.amount
+      this.transferData.fromId,
+      this.transferData.toId,
+      valorFormatado
     ).subscribe({
       next: () => {
-        alert('Transferência realizada!');
-        this.carregarBeneficios(); // Atualiza os saldos na tela
+        alert('Transferência realizada com sucesso!');
+        this.carregarBeneficios();
+        // Limpa o formulário após sucesso
+        this.transferData = { fromId: null as any, toId: null as any, amount: null as any };
       },
-      error: (err) => alert('Erro: ' + (err.error.error || 'Falha na operação'))
+      error: (err: any) => {
+        this.loading.set(false);
+        console.error('Erro detalhado:', err);
+        const mensagemErro = err.error?.error || err.error?.message || "Verifique o saldo ou os IDs informados.";
+        alert('Erro na Operação: ' + mensagemErro);
+      },
+      complete: () => this.loading.set(false)
     });
   }
 }
