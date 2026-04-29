@@ -2,51 +2,79 @@ package com.example.backend;
 
 import com.example.ejb.BeneficioEjbService;
 import com.example.backend.dto.TransferenciaDTO;
+import com.example.backend.repository.BeneficioRepository; // Importe o repository
+import com.example.model.Beneficio; // Importe sua entidade
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import jakarta.ejb.EJB;
 import java.util.*;
 
-// Imports do Swagger/OpenAPI 3
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
 @RequestMapping("/api/v1/beneficios")
 @CrossOrigin(origins = "*")
-@Tag(name = "Benefícios", description = "Operações relacionadas à gestão de benefícios e transferências")
+@Tag(name = "Benefícios", description = "Gestão de benefícios e transferências")
 public class BeneficioController {
 
-    @EJB
+    @Autowired
+    private BeneficioRepository repository;
+
+    @Autowired
     private BeneficioEjbService beneficioService;
 
-    @Operation(summary = "Lista os benefícios disponíveis", description = "Retorna uma lista mockada de tipos de benefícios para o frontend.")
+    @Operation(summary = "Lista todos os benefícios", description = "Retorna os dados reais do banco de dados.")
     @GetMapping
-    public ResponseEntity<List<String>> list() {
-        return ResponseEntity.ok(Arrays.asList("Auxílio Alimentação", "Vale Transporte", "Plano de Saúde"));
+    public List<Beneficio> list() {
+        return repository.findAll();
     }
 
-    @Operation(summary = "Realiza transferência de valores", 
-               description = "Processa a transferência entre contas de benefícios validando saldo e existência das contas via EJB.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Transferência concluída"),
-        @ApiResponse(responseCode = "400", description = "Saldo insuficiente ou IDs inválidos", 
-                     content = @Content(schema = @Schema(implementation = Map.class))),
-        @ApiResponse(responseCode = "500", description = "Erro interno no servidor de aplicação")
-    })
+    @Operation(summary = "Busca um benefício por ID")
+    @GetMapping("/{id}")
+    public ResponseEntity<Beneficio> findById(@PathVariable Long id) {
+        return repository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @Operation(summary = "Cria um novo benefício")
+    @PostMapping
+    public ResponseEntity<Beneficio> create(@RequestBody Beneficio beneficio) {
+        Beneficio salvo = repository.save(beneficio);
+        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+    }
+
+    @Operation(summary = "Atualiza um benefício existente")
+    @PutMapping("/{id}")
+    public ResponseEntity<Beneficio> update(@PathVariable Long id, @RequestBody Beneficio beneficio) {
+        return repository.findById(id).map(record -> {
+            record.setNome(beneficio.getNome());
+            record.setValor(beneficio.getValor());
+            return ResponseEntity.ok(repository.save(record));
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    @Operation(summary = "Remove um benefício")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        return repository.findById(id).map(record -> {
+            repository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    @Operation(summary = "Realiza transferência entre benefícios via EJB")
     @PostMapping("/transferir")
     public ResponseEntity<?> transferir(@RequestBody TransferenciaDTO request) {
         try {
             beneficioService.transfer(request.getFromId(), request.getToId(), request.getAmount());
-            return ResponseEntity.ok().body(Collections.singletonMap("message", "Transferência realizada com sucesso!"));
-        } catch (IllegalStateException | IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
+            return ResponseEntity.ok(Collections.singletonMap("message", "Sucesso!"));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Collections.singletonMap("error", "Erro interno ao processar transferência"));
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
         }
     }
 }
