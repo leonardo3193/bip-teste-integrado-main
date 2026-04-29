@@ -39,7 +39,5 @@ public class BeneficioEjbService {
         from.setValor(from.getValor().subtract(amount));
         to.setValor(to.getValor().add(amount));
 
-        em.merge(from);
-        em.merge(to);
     }
 }
