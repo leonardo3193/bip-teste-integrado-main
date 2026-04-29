@@ -1,0 +1,114 @@
+:host {
+  --sicoob-green: #003641;
+  --sicoob-light-green: #7DB61C;
+  --sicoob-accent: #C1D82F;
+  --bg-gray: #f4f7f6;
+  --white: #ffffff;
+  --text-dark: #333333;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: var(--bg-gray);
+  margin: 0;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+header {
+  background-color: var(--sicoob-green);
+  color: var(--white);
+  padding: 1.5rem;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+h1 { margin: 0; font-size: 1.5rem; font-weight: 600; }
+
+.card {
+  background: var(--white);
+  padding: 2rem;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+}
+
+/* Tabela Elegante */
+.table-container { overflow-x: auto; margin-top: 1rem; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+th {
+  background-color: #f8faf9;
+  color: var(--sicoob-green);
+  text-align: left;
+  padding: 12px;
+  border-bottom: 2px solid var(--sicoob-light-green);
+}
+
+td { padding: 12px; border-bottom: 1px solid #eee; color: var(--text-dark); }
+
+tr:hover { background-color: #f1f9f5; }
+
+.saldo-positivo { color: var(--sicoob-light-green); font-weight: bold; }
+
+/* Formulário Responsivo */
+.transfer-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  background: #fdfdfd;
+  padding: 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.form-group { display: flex; flex-direction: column; }
+
+label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--sicoob-green);
+  margin-bottom: 0.5rem;
+}
+
+input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--sicoob-light-green);
+  box-shadow: 0 0 0 2px rgba(125, 182, 28, 0.2);
+}
+
+button {
+  grid-column: 1 / -1;
+  background-color: var(--sicoob-light-green);
+  color: white;
+  border: none;
+  padding: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover { background-color: var(--sicoob-green); }
+
+button:disabled { background-color: #ccc; cursor: not-allowed; }
