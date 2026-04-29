@@ -8,6 +8,8 @@ import jakarta.persistence.LockModeType;
 import jakarta.persistence.PersistenceContext;
 import java.math.BigDecimal;
 
+import com.example.model.Beneficio;
+import jakarta.persistence.EntityNotFoundException; 
 @Stateless
 public class BeneficioEjbService {
 

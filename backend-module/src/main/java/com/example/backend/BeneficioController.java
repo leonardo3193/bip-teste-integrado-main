@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.ejb.EJB;
 import java.util.*;
 
+import com.example.backend.dto.TransferenciaDTO;
+
 @RestController
 @RequestMapping("/api/v1/beneficios")
 @CrossOrigin(origins = "*") // Libera para o Angular testar localmente
