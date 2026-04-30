@@ -137,12 +137,13 @@ tr:hover {
   grid-template-columns: 1fr 1fr 1fr; 
   gap: 2.5rem;
   margin-top: 1rem;
-  align-items: end;
+  align-items: flex-start;
 }
 
 .form-group { 
   display: flex; 
-  flex-direction: column; 
+  flex-direction: column;
+  vertical-align: top; 
 }
 
 label {
@@ -209,7 +210,7 @@ button:disabled {
   box-shadow: none;
 }
 
-/* FOOTER */
+/* Footer */
 footer {
   background-color: var(--primary-color);
   color: rgba(255, 255, 255, 0.7);
@@ -217,7 +218,7 @@ footer {
   border-top: 4px solid var(--secondary-color);
   width: 100%;
   box-sizing: border-box;
-  flex-shrink: 0; /* Impede o footer de sumir */
+  flex-shrink: 0; 
 }
 
 .footer-content {
@@ -246,4 +247,9 @@ footer {
   .button-row { justify-content: center; }
   button { width: 100%; }
   .footer-content { flex-direction: column; gap: 10px; text-align: center; }
+}
+
+.small-color{
+  color: #666; 
+  margin-top: 4px;
 }
