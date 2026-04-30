@@ -1,6 +1,7 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed,inject } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 // Definição da interface para tipagem forte (Clean Code)
 interface Beneficio {
@@ -17,6 +18,7 @@ interface Beneficio {
   styleUrl: './gestao-beneficios.component.css'
 })
 export class GestaoBeneficiosComponent {
+  private router = inject(Router);
 
 
   beneficios = signal<Beneficio[]>([
@@ -65,6 +67,11 @@ export class GestaoBeneficiosComponent {
       alert('Transferência realizada com sucesso!');
     }, 800);
   }
+
+  voltar() {
+    this.router.navigate(['/']);
+  }
+
 
   private resetForm(): void {
     this.transferData = {

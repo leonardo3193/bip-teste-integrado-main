@@ -1,0 +1,36 @@
+<div class="container">
+  <header>
+    <h1>Novo Benefício</h1>
+    <span>Portal do Colaborador</span>
+  </header>
+
+  <div class="card">
+    <h2>Cadastrar Registro</h2>
+    
+    <div class="form-container">
+      <div class="form-group">
+        <label>Nome do Benefício</label>
+        <input type="text" [(ngModel)]="novoBeneficio.nome" placeholder="Ex: Auxílio Creche">
+      </div>
+
+      <div class="form-group">
+        <label>Saldo Inicial (R$)</label>
+        <input type="number" [(ngModel)]="novoBeneficio.valor" placeholder="0.00">
+      </div>
+
+      <div class="button-row">
+        <button class="btn-cancelar" (click)="voltar()">Cancelar</button>
+        <button class="btn-salvar" (click)="salvar()" [disabled]="loading()">
+          {{ loading() ? 'Gravando...' : 'Gravar Registro' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2026 Portal do Colaborador</p>
+      <div class="footer-status"><span class="status-indicator"></span> Sistema Online</div>
+    </div>
+  </footer>
+</div>
