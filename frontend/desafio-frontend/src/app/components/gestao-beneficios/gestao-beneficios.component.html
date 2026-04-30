@@ -17,17 +17,35 @@
             </tr>
           </thead>
           <tbody>
-            @for (item of beneficios(); track item.id) {
+            @for (item of beneficiosPaginados(); track item.id) {
             <tr>
               <td><strong>#{{ item.id }}</strong></td>
               <td>{{ item.nome }}</td>
-              <td class="saldo-disponivel">
-                {{ item.valor | currency:'BRL' }}
-              </td>
+              <td class="saldo-disponivel">{{ item.valor | currency:'BRL' }}</td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="3" style="text-align:center">Nenhum registro encontrado.</td>
             </tr>
             }
           </tbody>
         </table>
+
+        @if (beneficios().length > itensPorPagina) {
+        <div class="pagination-container">
+          <button class="btn-pag" (click)="paginaAnterior()" [disabled]="paginaAtual() === 1">
+            &lt; Anterior
+          </button>
+
+          <span class="page-info">
+            Página <strong>{{ paginaAtual() }}</strong> de {{ totalPaginas() }}
+          </span>
+
+          <button class="btn-pag" (click)="proximaPagina()" [disabled]="paginaAtual() === totalPaginas()">
+            Próxima &gt;
+          </button>
+        </div>
+        }
       </div>
     </section>
 

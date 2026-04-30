@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, inject } from '@angular/core';
+import { Component, signal, OnInit, inject, computed } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { BeneficioService } from '../../services/beneficio.service';
 import { FormsModule } from '@angular/forms';
@@ -30,7 +30,30 @@ export class GestaoBeneficiosComponent implements OnInit {
     amount: ''
   };
 
+  paginaAtual = signal<number>(1);
+  itensPorPagina = 4;
+
   beneficios = signal<Beneficio[]>([]);
+
+  beneficiosPaginados = computed(() => {
+    const inicio = (this.paginaAtual() - 1) * this.itensPorPagina;
+    const fim = inicio + this.itensPorPagina;
+    return this.beneficios().slice(inicio, fim);
+  });
+
+  totalPaginas = computed(() => Math.ceil(this.beneficios().length / this.itensPorPagina));
+
+  proximaPagina() {
+    if (this.paginaAtual() < this.totalPaginas()) {
+      this.paginaAtual.update(p => p + 1);
+    }
+  }
+
+  paginaAnterior() {
+    if (this.paginaAtual() > 1) {
+      this.paginaAtual.update(p => p - 1);
+    }
+  }
 
   ngOnInit(): void {
     this.carregarBeneficios();
@@ -38,7 +61,10 @@ export class GestaoBeneficiosComponent implements OnInit {
 
   carregarBeneficios(): void {
     this.beneficioService.listAll().subscribe({
-      next: (dados) => this.beneficios.set(dados),
+      next: (dados) => {
+        this.beneficios.set(dados);
+        this.paginaAtual.set(1);
+      },
       error: (err) => console.error('Erro ao carregar grid:', err)
     });
   }
