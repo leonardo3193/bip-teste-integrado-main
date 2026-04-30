@@ -48,12 +48,16 @@ public class BeneficioController {
 
     @Operation(summary = "Atualiza um benefício existente")
     @PutMapping("/{id}")
-    public ResponseEntity<Beneficio> update(@PathVariable Long id, @RequestBody Beneficio beneficio) {
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Beneficio beneficio) {
+    try {
         return repository.findById(id).map(record -> {
             record.setNome(beneficio.getNome());
             record.setValor(beneficio.getValor());
             return ResponseEntity.ok(repository.save(record));
         }).orElse(ResponseEntity.notFound().build());
+    } catch (Exception e) {
+        return ResponseEntity.status(500).body(Map.of("errorMessage", e.getMessage()));
+    }
     }
 
     @Operation(summary = "Remove um benefício")

@@ -14,6 +14,7 @@
               <th>ID</th>
               <th>Descrição do Benefício</th>
               <th style="text-align: right;">Saldo Disponível</th>
+              <th style="text-align: center;">Ações</th> <!-- Nova Coluna -->
             </tr>
           </thead>
           <tbody>
@@ -22,10 +23,19 @@
               <td><strong>#{{ item.id }}</strong></td>
               <td>{{ item.nome }}</td>
               <td class="saldo-disponivel">{{ item.valor | currency:'BRL' }}</td>
+              <td style="text-align: center;">
+                <button class="btn-acao edit" (click)="editar(item)" title="Editar">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+                <button class="btn-acao delete" (click)="deletar(item.id)" title="Excluir">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
             </tr>
             } @empty {
             <tr>
-              <td colspan="3" style="text-align:center">Nenhum registro encontrado.</td>
+              <td colspan="4" style="text-align:center">Nenhum registro encontrado.</td>
+              <!-- colspan alterado para 4 -->
             </tr>
             }
           </tbody>
@@ -91,4 +101,37 @@
       </div>
     </div>
   </footer>
+
+  <!-- Modal de Edição -->
+  @if (beneficioEmEdicao()) {
+  <div class="modal-overlay">
+    <div class="modal-content">
+      <header>
+        <h3>Editar Benefício #{{ beneficioEmEdicao()?.id }}</h3>
+      </header>
+
+      <div class="transfer-form">
+        <div class="form-group">
+          <label>Descrição do Benefício</label>
+          <input type="text" [(ngModel)]="beneficioForm.nome" placeholder="Ex: Vale Refeição">
+        </div>
+
+        <div class="form-group">
+          <label>Saldo Disponível (R$)</label>
+          <input type="text" [(ngModel)]="beneficioForm.valor" name="valorBeneficio" placeholder="0,00">
+        </div>
+
+        <div class="button-row">
+          <button type="button" class="btn-cancelar" (click)="cancelarEdicao()">
+            Cancelar
+          </button>
+
+          <button type="button" (click)="salvarBeneficio()" [disabled]="loading()">
+            {{ loading() ? 'Salvando...' : 'Salvar Alterações' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
 </div>

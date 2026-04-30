@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 export class BeneficioService {
   private readonly API = 'http://localhost:8080/api/v1/beneficios';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   listAll(): Observable<any[]> {
     return this.http.get<any[]>(this.API);
@@ -17,10 +17,19 @@ export class BeneficioService {
    * @param beneficio Objeto contendo nome e valor inicial.
    */
   salvar(beneficio: { nome: string, valor: number | null }): Observable<any> {
-  return this.http.post(this.API, beneficio);
-}
+    return this.http.post(this.API, beneficio);
+  }
+
+  editar(id: number, beneficio: { nome: string, valor: number | null }): Observable<any> {
+    return this.http.put(`${this.API}/${id}`, beneficio);
+  }
+
+  deletar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API}/${id}`);
+  }
 
   transferir(fromId: number, toId: number, amount: number): Observable<any> {
     return this.http.post(`${this.API}/transferir`, { fromId, toId, amount });
   }
+  
 }
