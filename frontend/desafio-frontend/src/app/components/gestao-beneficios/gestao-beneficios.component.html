@@ -53,9 +53,12 @@
         </div>
 
         <div class="button-row">
-          <button class="btn-cancelar" (click)="voltar()">Cancelar</button>
-          <button (click)="executarTransferencia()" [disabled]="loading()">
-            Confirmar Transferência
+          <button type="button" class="btn-cancelar" (click)="voltar()">
+            Cancelar
+          </button>
+
+          <button type="button" (click)="executarTransferencia()" [disabled]="loading()">
+            {{ loading() ? 'Processando...' : 'Confirmar Transferência' }}
           </button>
         </div>
       </div>

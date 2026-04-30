@@ -21,11 +21,13 @@
         <h2>Olá, Leonardo.</h2>
         <p>O que você deseja gerenciar hoje no sistema de benefícios?</p>
       </div>
+
       <div class="date-badge">
-        <i class="icon-calendar"></i> 29 de Abril, 2026
+        <i class="icon-calendar"></i>
+        {{ dataHoje | date:'dd \'de\' MMMM, yyyy':'':'pt-BR' }}
       </div>
     </section>
-    
+
     <div class="dashboard-grid">
       <div class="premium-card" (click)="navegar('gestao-beneficios')">
         <div class="card-icon-box">

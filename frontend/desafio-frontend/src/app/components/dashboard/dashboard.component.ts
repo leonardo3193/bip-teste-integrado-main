@@ -10,6 +10,9 @@ import { Router, RouterModule } from '@angular/router';
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
+
+  dataHoje = new Date();
+
   private router = inject(Router);
 
   navegar(rota: string) {
