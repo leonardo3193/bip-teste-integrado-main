@@ -1,5 +1,6 @@
-import { Component, signal, computed,inject } from '@angular/core';
+import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
+import { BeneficioService } from '../../services/beneficio.service';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -17,15 +18,11 @@ interface Beneficio {
   templateUrl: './gestao-beneficios.component.html',
   styleUrl: './gestao-beneficios.component.css'
 })
-export class GestaoBeneficiosComponent {
+export class GestaoBeneficiosComponent implements OnInit {
   private router = inject(Router);
+  private beneficioService = inject(BeneficioService);
 
-
-  beneficios = signal<Beneficio[]>([
-    { id: 12, nome: 'Vale Transporte', valor: 797.00 },
-    { id: 123, nome: 'Auxílio Alimentação', valor: 703.00 }
-  ]);
-
+  loading = signal<boolean>(false);
 
   transferData = {
     fromId: null as number | null,
@@ -33,51 +30,49 @@ export class GestaoBeneficiosComponent {
     amount: ''
   };
 
-  loading = signal<boolean>(false);
+  beneficios = signal<Beneficio[]>([]);
+
+  ngOnInit(): void {
+    this.carregarBeneficios();
+  }
+
+  carregarBeneficios(): void {
+    this.beneficioService.listAll().subscribe({
+      next: (dados) => this.beneficios.set(dados),
+      error: (err) => console.error('Erro ao carregar grid:', err)
+    });
+  }
 
   executarTransferencia(): void {
+
     const { fromId, toId, amount } = this.transferData;
 
-    // SOLUÇÃO: 
-    // 1. Remove todos os pontos (milhares)
-    // 2. Troca a vírgula por ponto (decimal)
-    const valorLimpo = amount.toString().replace(/\./g, '').replace(',', '.');
+    const valorLimpo = amount.replace(/\./g, '').replace(',', '.');
     const valorNumerico = parseFloat(valorLimpo);
 
     if (!fromId || !toId || isNaN(valorNumerico) || valorNumerico <= 0) {
-      alert('Por favor, informe um valor válido para a operação.');
+      alert('Dados de transferência inválidos.');
       return;
     }
 
     this.loading.set(true);
 
-    // Simulação do Backend
-    setTimeout(() => {
-      this.beneficios.update(lista => {
-        return lista.map(b => {
-          // Usando Number(fromId) para garantir comparação correta caso o input venha como string
-          if (Number(b.id) === Number(fromId)) return { ...b, valor: b.valor - valorNumerico };
-          if (Number(b.id) === Number(toId)) return { ...b, valor: b.valor + valorNumerico };
-          return b;
-        });
-      });
+    this.beneficioService.transferir(fromId, toId, valorNumerico).subscribe({
+      next: () => {
+        this.loading.set(false);
+        this.resetForm();
+        alert('Transferência concluída!');
+        this.carregarBeneficios();
+      },
+      error: () => this.loading.set(false)
+    });
+  }
 
-      this.loading.set(false);
-      this.resetForm();
-      alert('Transferência realizada com sucesso!');
-    }, 800);
+  private resetForm(): void {
+    this.transferData = { fromId: null, toId: null, amount: '' };
   }
 
   voltar() {
     this.router.navigate(['/']);
-  }
-
-
-  private resetForm(): void {
-    this.transferData = {
-      fromId: null,
-      toId: null,
-      amount: ''
-    };
   }
 }

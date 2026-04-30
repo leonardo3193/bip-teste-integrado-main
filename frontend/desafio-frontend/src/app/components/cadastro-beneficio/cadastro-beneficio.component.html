@@ -6,7 +6,7 @@
 
   <div class="card">
     <h2>Cadastrar Registro</h2>
-    
+
     <div class="form-container">
       <div class="form-group">
         <label>Nome do Benefício</label>
@@ -15,7 +15,10 @@
 
       <div class="form-group">
         <label>Saldo Inicial (R$)</label>
-        <input type="number" [(ngModel)]="novoBeneficio.valor" placeholder="0.00">
+        <input type="text" [(ngModel)]="novoBeneficio.valor" placeholder="0,00">
+        <small class="small-color">
+          Use formato: 5.000,00
+        </small>
       </div>
 
       <div class="button-row">

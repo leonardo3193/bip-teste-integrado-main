@@ -19,29 +19,39 @@ export class CadastroBeneficioComponent {
   
   novoBeneficio = {
     nome: '',
-    valor: null as number | null
+    valor: '',
   };
 
-  salvar() {
-    if (!this.novoBeneficio.nome || !this.novoBeneficio.valor) {
-      alert('Preencha todos os campos!');
-      return;
-    }
+  // No cadastro-beneficio.component.ts
+salvar() {
+  // Remove pontos de milhar e troca vírgula por ponto
+  const valorFormatado = this.novoBeneficio.valor.replace(/\./g, '').replace(',', '.');
+  const valorNumerico = parseFloat(valorFormatado);
 
-    this.loading.set(true);
-    
-    this.beneficioService.salvar(this.novoBeneficio).subscribe({
-      next: () => {
-        alert('Benefício cadastrado com sucesso!');
-        this.router.navigate(['/gestao-beneficios']);
-      },
-      error: (err) => {
-        this.loading.set(false);
-        console.error(err);
-        alert('Erro ao salvar o registro.');
-      }
-    });
+  if (!this.novoBeneficio.nome || isNaN(valorNumerico)) {
+    alert('Dados inválidos!');
+    return;
   }
+
+  const payload = {
+    nome: this.novoBeneficio.nome,
+    valor: valorNumerico // Aqui ele enviará 700 ou 700.50 como número
+  };
+
+  this.loading.set(true);
+  this.beneficioService.salvar(payload).subscribe({
+    next: () => {
+      // Navega de volta para a gestão
+      this.router.navigate(['/gestao-beneficios']).then(() => {
+        // Opcional: emitir um evento ou usar um service para avisar que houve mudança
+      });
+    },
+    error: (err) => {
+      this.loading.set(false);
+      console.error('Erro no payload:', err);
+    }
+  });
+}
 
   voltar() {
     this.router.navigate(['/']);
