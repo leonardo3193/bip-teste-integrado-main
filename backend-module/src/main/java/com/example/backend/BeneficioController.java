@@ -1,9 +1,9 @@
 package com.example.backend;
 
-import com.example.ejb.BeneficioEjbService;
 import com.example.backend.dto.TransferenciaDTO;
-import com.example.backend.repository.BeneficioRepository; // Importe o repository
-import com.example.model.Beneficio; // Importe sua entidade
+import com.example.backend.service.BeneficioService;
+import com.example.backend.repository.BeneficioRepository;
+import com.example.model.Beneficio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -12,8 +12,6 @@ import java.util.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("/api/v1/beneficios")
@@ -25,9 +23,9 @@ public class BeneficioController {
     private BeneficioRepository repository;
 
     @Autowired
-    private BeneficioEjbService beneficioService;
+    private BeneficioService beneficioService;
 
-    @Operation(summary = "Lista todos os benefícios", description = "Retorna os dados reais do banco de dados.")
+    @Operation(summary = "Lista todos os benefícios")
     @GetMapping
     public List<Beneficio> list() {
         return repository.findAll();
@@ -61,20 +59,32 @@ public class BeneficioController {
     @Operation(summary = "Remove um benefício")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        return repository.findById(id).map(record -> {
-            repository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }).orElse(ResponseEntity.notFound().build());
+        if (!repository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        repository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Realiza transferência entre benefícios via EJB")
+    /**
+     * Aqui a Controller não fala direto com o EJB.
+     * Ela chama a Service, que faz os logs/auditoria e delega a transação pesada ao EJB.
+     */
+    @Operation(summary = "Realiza transferência entre benefícios", 
+               description = "Operação atômica gerenciada por EJB com Pessimistic Locking.")
     @PostMapping("/transferir")
     public ResponseEntity<?> transferir(@RequestBody TransferenciaDTO request) {
         try {
-            beneficioService.transfer(request.getFromId(), request.getToId(), request.getAmount());
-            return ResponseEntity.ok(Collections.singletonMap("message", "Sucesso!"));
+            beneficioService.processarTransferencia(
+                request.getFromId(), 
+                request.getToId(), 
+                request.getAmount()
+            );
+            return ResponseEntity.ok(Collections.singletonMap("message", "Transferência realizada com sucesso!"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
+            // Retorna o erro de negócio (ex: Saldo Insuficiente) capturado na Service/EJB
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                 .body(Collections.singletonMap("error", e.getMessage()));
         }
     }
 }
