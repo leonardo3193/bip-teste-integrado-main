@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [
     CommonModule, 
-    RouterModule // Essencial para o router-outlet funcionar
+    RouterModule
   ],
   template: `
     <router-outlet></router-outlet>

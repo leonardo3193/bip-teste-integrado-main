@@ -16,42 +16,39 @@ export class CadastroBeneficioComponent {
   private router = inject(Router);
 
   loading = signal(false);
-  
+
   novoBeneficio = {
     nome: '',
     valor: '',
   };
 
-  // No cadastro-beneficio.component.ts
-salvar() {
-  // Remove pontos de milhar e troca vírgula por ponto
-  const valorFormatado = this.novoBeneficio.valor.replace(/\./g, '').replace(',', '.');
-  const valorNumerico = parseFloat(valorFormatado);
+  salvar() {
+    // Remove pontos de milhar e troca vírgula por ponto
+    const valorFormatado = this.novoBeneficio.valor.replace(/\./g, '').replace(',', '.');
+    const valorNumerico = parseFloat(valorFormatado);
 
-  if (!this.novoBeneficio.nome || isNaN(valorNumerico)) {
-    alert('Dados inválidos!');
-    return;
-  }
-
-  const payload = {
-    nome: this.novoBeneficio.nome,
-    valor: valorNumerico // Aqui ele enviará 700 ou 700.50 como número
-  };
-
-  this.loading.set(true);
-  this.beneficioService.salvar(payload).subscribe({
-    next: () => {
-      // Navega de volta para a gestão
-      this.router.navigate(['/gestao-beneficios']).then(() => {
-        // Opcional: emitir um evento ou usar um service para avisar que houve mudança
-      });
-    },
-    error: (err) => {
-      this.loading.set(false);
-      console.error('Erro no payload:', err);
+    if (!this.novoBeneficio.nome || isNaN(valorNumerico)) {
+      alert('Dados inválidos!');
+      return;
     }
-  });
-}
+
+    const payload = {
+      nome: this.novoBeneficio.nome,
+      valor: valorNumerico
+    };
+
+    this.loading.set(true);
+    this.beneficioService.salvar(payload).subscribe({
+      next: () => {
+        this.router.navigate(['/gestao-beneficios']).then(() => {
+        });
+      },
+      error: (err) => {
+        this.loading.set(false);
+        console.error('Erro no payload:', err);
+      }
+    });
+  }
 
   voltar() {
     this.router.navigate(['/']);
