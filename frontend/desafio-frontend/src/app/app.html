@@ -13,15 +13,17 @@
             <tr>
               <th>ID</th>
               <th>Descrição do Benefício</th>
-              <th>Saldo Disponível</th>
+              <th style="text-align: right;">Saldo Disponível</th>
             </tr>
           </thead>
           <tbody>
-            @for (item of beneficios(); track $index) {
+            @for (item of beneficios(); track item.id) {
             <tr>
               <td><strong>#{{ item.id }}</strong></td>
               <td>{{ item.nome }}</td>
-              <td class="saldo-positivo">{{ item.valor | currency:'BRL' }}</td>
+              <td class="saldo-disponivel">
+                {{ item.valor | currency:'BRL' }}
+              </td>
             </tr>
             }
           </tbody>
@@ -55,4 +57,13 @@
       </div>
     </section>
   </div>
+  
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2026 Portal do Colaborador - Gestão de Benefícios Integrada</p>
+      <div class="footer-status">
+        <span class="status-indicator"></span> Sistema Online
+      </div>
+    </div>
+  </footer>
 </div>
