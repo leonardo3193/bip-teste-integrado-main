@@ -1,6 +1,6 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, LOCALE_ID } from '@angular/core';
+import { ApplicationConfig, LOCALE_ID } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http'; // Importante garantir que esteja aqui
+import { provideHttpClient } from '@angular/common/http';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 
@@ -10,10 +10,9 @@ registerLocaleData(localePt);
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(),
-    // Define o ID de localização global como pt-BR para formatar números e moedas
+    // Garante que pipes de moeda (currency) e data (date) usem o padrão brasileiro
     { provide: LOCALE_ID, useValue: 'pt-BR' }
   ]
 };

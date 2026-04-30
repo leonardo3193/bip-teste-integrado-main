@@ -1,0 +1,71 @@
+<div class="container">
+  <header>
+    <h1>Gestão de Benefícios</h1>
+    <span>Portal do Colaborador</span>
+  </header>
+
+  <div class="card">
+    <section>
+      <h3>Meus Saldos</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Descrição do Benefício</th>
+              <th style="text-align: right;">Saldo Disponível</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of beneficios(); track item.id) {
+            <tr>
+              <td><strong>#{{ item.id }}</strong></td>
+              <td>{{ item.nome }}</td>
+              <td class="saldo-disponivel">
+                {{ item.valor | currency:'BRL' }}
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 2rem 0;">
+
+    <section>
+      <h3>Efetuar Transferência</h3>
+      <div class="transfer-form">
+        <div class="form-group">
+          <label>Conta Origem (ID)</label>
+          <input type="number" [(ngModel)]="transferData.fromId" placeholder="Ex: 1">
+        </div>
+
+        <div class="form-group">
+          <label>Conta Destino (ID)</label>
+          <input type="number" [(ngModel)]="transferData.toId" placeholder="Ex: 2">
+        </div>
+
+        <div class="form-group">
+          <label>Valor da Operação (R$)</label>
+          <input type="text" [(ngModel)]="transferData.amount" placeholder="0,00">
+        </div>
+
+        <div class="button-row">
+          <button (click)="executarTransferencia()" [disabled]="loading()">
+            Confirmar Transferência
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2026 Portal do Colaborador - Gestão de Benefícios Integrada</p>
+      <div class="footer-status">
+        <span class="status-indicator"></span> Sistema Online
+      </div>
+    </div>
+  </footer>
+</div>
